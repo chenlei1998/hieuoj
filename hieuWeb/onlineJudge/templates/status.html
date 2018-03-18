@@ -1,0 +1,129 @@
+{% extends 'layout.html' %}
+{% block title %}
+    HIEUOJ|排行榜
+{% endblock %}
+{% block body %}
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title">提交列表</h3>
+                </div>
+                <div class="panel-body">
+                    <table class="table table-bordered table-text-center">
+                        <thead>
+                        <tr>
+                            <th>题号</th>
+                            <th>提交用户</th>
+                            <th>语言</th>
+                            <th>使用内存</th>
+                            <th>运行时间</th>
+                            <th>结果</th>
+                            <th>提交时间</th>
+                        </tr>
+                        </thead>
+                        {% for task in task_list %}
+                            <tr>
+                                <td>{{ task.problem_id }}</td>
+                                <td>
+                                    {{ task.user.username }}
+                                    {% if task.user.is_staff %}
+                                        <span class="label label-info">管理员</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ task.lang }}</td>
+                                <td>
+                                    {% ifequal task.status 'ACCEPTED' %}
+                                        {{ task.used_memory }}MB
+                                    {% else %}
+                                        -
+                                    {% endifequal %}
+                                </td>
+                                <td>
+                                    {% ifequal task.status 'ACCEPTED' %}
+                                        {{ task.used_time }}MS
+                                    {% else %}
+                                        -
+                                    {% endifequal %}
+                                </td>
+                                <td>
+                                    {% ifequal task.status 'ACCEPTED' %}
+                                        <span class="text-success">{{ task.status }}</span>
+                                    {% else %}
+                                        <span class="text-warning">{{ task.status }}</span>
+                                    {% endifequal %}
+                                </td>
+                                <td>{{ task.pub_date }}</td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            </div>
+            <ul class="pagination pagination-sm">
+                <li {% if not task_list.has_previous %}class="disabled"{% endif %}>
+                    <a href="{% if task_list.has_previous %}{{ request.path }}?page={{ task_list.previous_page_number }}{% else %}#{% endif %}">&laquo;</a>
+                </li>
+                {% for page in before_pages %}
+                    <li><a href="{{ request.path }}?page={{ page }}">{{ page }}</a></li>
+                {% endfor %}
+                <li class="active"><a href="#">{{ task_list.number }}</a></li>
+                {% for page in after_pages %}
+                    <li><a href="{{ request.path }}?page={{ page }}">{{ page }}</a></li>
+                {% endfor %}
+                <li {% if not task_list.has_next %}class="disabled"{% endif %}>
+                    <a href="{% if task_list.has_next %}{{ request.path }}?page={{ task_list.next_page_number }}{% else %}#{% endif %}">&raquo;</a>
+                </li>
+            </ul>
+        </div>
+        <div class="col-lg-4">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title">筛选</h3>
+                </div>
+                <div class="panel-body">
+                    <form action="{{ request.path }}" method="GET">
+                        <div class="form-group">
+                            <label class="control-label">用户名</label>
+                            <input name="username" placeholder="按用户名筛选" type="text" class="form-control" value="{{ filter_form_data.username }}">
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">问题号</label>
+                            <input name="problem_id" placeholder="按问题编号筛选" type="text" class="form-control" value="{{ filter_form_data.problem_id }}">
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">结果</label>
+                            <select name="status" class="form-control">
+                                <option {% if 'status' not in filter_form_data %}selected=selected{% endif %} value="">
+                                    按运行结果筛选
+                                </option>
+                                {% for status in status_list %}
+                                    <option {% ifequal status filter_form_data.status %}selected=selected{% endifequal %}
+                                            value="{{ status }}">{{ status }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">学院</label>
+                            <select name="department" class="form-control">
+                                <option {% if 'department' not in filter_form_data %}selected=selected{% endif %}
+                                        value="">按学院筛选
+                                </option>
+                                {% for department in department_list %}
+                                    <option {% ifequal department.department filter_form_data.department %}selected=selected{% endifequal %}
+                                            value="{{ department.department }}">{{ department.department }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">班级</label>
+                            <input name="class" type="text" placeholder="按班级编号晒选" class="form-control" value="{{ filter_form_data.class }}">
+                        </div>
+                        <div class="form-group">
+                            <button class="btn btn-primary form-control" type="submit" width="100%">筛选</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

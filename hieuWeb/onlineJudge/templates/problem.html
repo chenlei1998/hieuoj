@@ -1,0 +1,82 @@
+{% extends 'layout.html' %}
+{% block title %}
+HIEUOJ|{{ problem.title }}
+{% endblock %}
+{% block body %}
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h1 class="h4">{{ problem.title }}</h1>
+                    <label class="label label-warning">内存限制: {{ problem.memory_limit }}MB</label>
+                    <label class="label label-warning">时间限制: {{ problem.time_limit }}MS</label>
+                </div>
+            </div>
+            <hr />
+            <div class="row">
+                <div class="col-lg-12">
+                    {% autoescape off %}
+                    <h2 class="h5">描述:</h2>
+                    <p>{{ problem.description }}</p>
+                    <hr />
+                    <h2 class="h5">输入:</h2>
+                    <p>{{ problem.input_description }}</p>
+                    <hr />
+                    <h2 class="h5">输出:</h2>
+                    <p>{{ problem.output_description }}</p>
+                    <hr />
+                    <h2 class="h5">样例输入:</h2>
+                    <p>{{ problem.sample_input|linebreaksbr }}</p>
+                    <hr />
+                    <h2 class="h5">样例输出:</h2>
+                    <p>{{ problem.sample_output|linebreaksbr }}</p>
+                    <hr />
+                    {% if problem.hint %}
+                        <h2 class="h5">提示:</h2>
+                        <p>{{ problem.hint }}</p>
+                    {% endif %}
+                    {% endautoescape %}
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="panel panel-warning">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        答案提交
+                    </h3>
+                </div>
+                <div class="panel-body">
+                    <form id="submit-solution" action="{{ request.url }}" method="POST">
+                        <div class="form-group">
+                            {{ solution_form.code }}
+                            <span class="help-block"></span>
+                        </div>
+                        <div class="form-group">
+                            {{ solution_form.lang }}
+                            <span class="help-block"></span>
+                        </div>
+                        <div class="form-group">
+                            <button class="btn btn-warning btn-block" type="submit">提交解答</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            {% include 'widgets/my_submit.html' %}
+            {% include 'widgets/system_info.html' %}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <div id="SOHUCS" sid="problem-{{ problem.id }}" ></div>
+            <script charset="utf-8" type="text/javascript" src="https://changyan.sohu.com/upload/changyan.js" ></script>
+            <script type="text/javascript">
+            window._config = { showScore: true };
+            window.changyan.api.config({
+            appid: 'cytn0vCKV',
+            conf: 'prod_72352543fe74450103f244841759a673'
+            });
+            </script>
+        </div>
+    </div>
+{% endblock %}

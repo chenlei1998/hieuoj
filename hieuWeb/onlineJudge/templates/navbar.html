@@ -1,0 +1,141 @@
+{% load static %}
+<nav class="navbar navbar-inverse">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                    data-target="#navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="{{ home_url }}">
+                <img alt="Brand" style="margin-top: -7px" width="35px" height="40px" src="{% static 'img/brand.png' %}">
+            </a>
+        </div>
+        <div class="collapse navbar-collapse" id="navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                <li {% ifequal home_url request.path %}class="active"{% endifequal %}>
+                    <a href="{{ home_url }}">首页</a>
+                </li>
+                <li {% if contest_url in request.path %}class="active"{% endif %}>
+                    <a href="{{ contest_url }}">赛事</a></li>
+                <li {% ifequal request.path ranklist_url %}class="active"{% endifequal %}>
+                    <a href="{% url 'ranklist:index' %}">排名</a>
+                </li>
+                <li {% ifequal request.path status_url %}class="active"{% endifequal %}>
+                    <a href="{% url 'status' %}">状态</a>
+                </li>
+                <li {% ifequal request.path manager_url %}class="active"{% endifequal %}>
+                    <a href="{% url 'admin:login' %}">管理</a>
+                </li>
+            </ul>
+            <div class="navbar-form navbar-right">
+                {% if not request.user.is_authenticated %}
+                    <button class="btn btn-default" data-toggle="modal" data-target="#login-modal">登录</button>
+                    <button class="btn btn-success" data-toggle="modal" data-target="#login-modal">注册</button>
+                {% else %}
+                    <div class="btn-group">
+                        <a href="#" class="btn btn-default">
+                            <span class="glyphicon glyphicon-user"></span>
+                            {{ request.user.username }}
+                        </a>
+                        <a href="#" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a href="{% url 'status' %}?username={{ user.username }}">我的提交</a></li>
+                            <li><a href="{% url 'user:change-password' %}">修改密码</a></li>
+                            <li class="divider"></li>
+                            <li><a href="{% url 'user:logout' %}">退出登录</a></li>
+                        </ul>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</nav>
+{% if not request.user.is_authenticated %}
+    <!--畅言退出登录-->
+    <script>
+        var img = new Image();
+        img.src='http://changyan.sohu.com/api/2/logout';
+    </script>
+    <!-- Login Modal -->
+    <div class="modal fade" id="login-modal" tabindex="-1" role="dialog" aria-labelledby="loginModalLabel">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="loginModalLabel">登录</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-4 col-md-push-7">
+                            <h1 class="h5 text-muted">登录</h1>
+                            <form id="user-login" action="{% url 'user:login' %}" method="POST">
+                                <div class="form-group">
+                                    <label class="control-label" for="account">账号</label>
+                                    {{ login_form.account }}
+                                    <span class="help-block"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label" for="password">密码</label><span class="pull-right"><a
+                                        href="{% url 'user:reset-password' %}">忘记密码</a></span>
+                                    {{ login_form.password }}
+                                    <span class="help-block"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label" for="login-captcha">验证码</label>
+                                    {{ login_form.captcha }}
+                                    <div id="login-captcha" class="captcha">
+                                        <img data-src="{% url 'user:login-captcha' %}" width="240px" height="50px">
+                                    </div>
+                                    <span class="help-block"></span>
+                                </div>
+                                <div class="form-group clearfix">
+                                    <div class="pull-left">
+                                        <label>
+                                            {{ login_form.remember_status }}
+                                            记住登录状态
+                                        </label>
+                                    </div>
+                                    <button type='submit' class="btn btn-primary pull-right" width="100%">登录</button>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="hidden-xs hidden-sm"
+                             style="position:absolute;height:90%;border-left:1px solid #EEE; left:50%; "></div>
+                        <div class="col-md-4 col-md-pull-3">
+                            <h1 class="h5 text-muted">注册新账号</h1>
+                            <form id="user-register" action="{% url 'user:register' %}" method="POST">
+                                <div class="form-group">
+                                    <label class="control-label" for="account">教务网账号</label>
+                                    {{ register_form.account }}
+                                    <span class="help-block"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label" for="password">教务网密码</label>
+                                    {{ register_form.password }}
+                                    <span class="help-block"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label class="required control-label">验证码</label>
+                                    {{ register_form.captcha }}
+                                    <div id="register-captcha" class="captcha">
+                                        <img data-src="{% url 'user:register-captcha' %}" width="240px" height="50px">
+                                    </div>
+                                    <span class="help-block"></span>
+                                </div>
+                                <div class="form-group">
+                                    <button class="btn btn-primary" type="submit" width="100%">注册</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endif %}

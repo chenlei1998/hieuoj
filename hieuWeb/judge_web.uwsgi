@@ -1,0 +1,9 @@
+[uwsgi]
+socket = localhost:9991#/tmp/judge.sock
+module = hieuWeb.wsgi:application
+master = True
+pidfile = /tmp/judge_web.pid
+vacuum = True
+processes = 2
+threads = 10
+virtualenv = /home/ubuntu/env/django-1.11.7

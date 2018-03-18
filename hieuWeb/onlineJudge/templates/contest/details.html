@@ -1,0 +1,161 @@
+{% extends 'layout.html' %}
+{% block title %}
+    HIEUOJ|{{ contest.title }}
+{% endblock %}
+{% block body %}
+    <h1 class="h3 text-center">{{ contest.title }}</h1>
+    <div class="row">
+        <div class="col-lg-6 col-lg-push-3">
+            <table class="table table-text-center">
+                <thead>
+                <tr>
+                    <th>开始时间</th>
+                    <th>结束时间</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>{{ contest.start_date }}</td>
+                    <td>{{ contest.end_date }}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <h2 class="h5">题目列表</h2>
+    <div class="row">
+        <div class="col-lg-12">
+            <table class="table table-bordered table-hover table-condensed">
+                <thead>
+                <tr>
+                    <th>题号</th>
+                    <th>标题</th>
+                    <th>通过率</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for slug, problem in problems %}
+                    <tr>
+                        <td>{{ slug }}</td>
+                        <td>
+                            <a href="{% url 'contest:problem' contest.id slug %}">{{ problem.title }}</a>
+                        </td>
+                        <td>{{ problem.total_ac }}/{{ problem.total_submit }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <h2 class="h5">排名统计</h2>
+    <div class="row">
+        <div class="col-lg-12">
+            <table class="table table-bordered table-striped table-hover table-condensed table-text-center">
+                <thead>
+                    <tr>
+                        <th>排名</th>
+                        <th>用户名称</th>
+                        <th>解题数量</th>
+                        {% for slug, problem in problems %}
+                            <th colspan="2">{{ slug }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                {% for rank_user, items in rank_list %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ rank_user.username }}
+                            {% if rank_user.is_staff %}
+                                <span class="label label-info">管理员</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ items.ac_count }}</td>
+                        {% for item in items.items %}
+                            {% if item.ac %}
+                                <td class="bg-success text-success">{{ item.cost }}</td>
+                                <td class="bg-success text-danger">+{{ item.punish }}</td>
+                            {% else %}
+                                <td colspan="2">-</td>
+                            {% endif %}
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <h2 class="h5">提交列表</h2>
+    <div class="row">
+        <div class="col-lg-12">
+            <table class="table table-hover table-condensed table-text-center">
+                <thead>
+                    <tr>
+                        <th>用户名称</th>
+                        <th>题号</th>
+                        <th>语言</th>
+                        <th>使用内存</th>
+                        <th>运行时间</th>
+                        <th>结果</th>
+                        <th>提交时间</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for task in  task_list %}
+                    <tr>
+                        <td>
+                            {{ task.user.username }}
+                            {% if task.user.is_staff %}
+                                <span class="label label-info">管理员</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ task.slug }}</td>
+                        <td>{{ task.lang }}</td>
+                        <td>
+                            {% ifequal task.status 'ACCEPTED' %}
+                                {{ task.used_memory }}MB
+                            {% else %}
+                                -
+                            {% endifequal %}
+                        </td>
+                        <td>
+                            {% ifequal task.status 'ACCEPTED' %}
+                                {{ task.used_time }}MS
+                            {% else %}
+                                -
+                            {% endifequal %}
+                        </td>
+                        <td>
+                            {% ifequal task.status 'ACCEPTED' %}
+                                <span class="text-success">{{ task.status }}</span>
+                            {% else %}
+                                <span class="text-warning">{{ task.status }}</span>
+                            {% endifequal %}
+                        </td>
+                        <td>{{ task.pub_date }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <ul class="pagination pagination-sm">
+                <li {% if not task_list.has_previous %}class="disabled"{% endif %}>
+                    <a href="{% if task_list.has_previous %}{{ request.path }}?page={{ task_list.previous_page_number }}{% else %}#{% endif %}">&laquo;</a>
+                </li>
+                {% for page in before_pages %}
+                    <li><a href="{{ request.path }}?page={{ page }}">{{ page }}</a></li>
+                {% endfor %}
+                <li class="active"><a href="#">{{ task_list.number }}</a></li>
+                {% for page in after_pages %}
+                    <li><a href="{{ request.path }}?page={{ page }}">{{ page }}</a></li>
+                {% endfor %}
+                <li {% if not task_list.has_next %}class="disabled"{% endif %}>
+                    <a href="{% if task_list.has_next %}{{ request.path }}?&page={{ task_list.next_page_number }}{% else %}#{% endif %}">&raquo;</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,23 @@
+.captcha {
+    margin-top: 10px;
+}
+
+.btn-register {
+    width: 100%;
+}
+
+.captcha {
+    display: none;
+}
+
+.x-nav-tabs>li {
+    width: 33.33%;
+}
+
+.table-text-center td {
+    text-align: center;
+}
+
+.table-text-center th {
+    text-align: center;
+}

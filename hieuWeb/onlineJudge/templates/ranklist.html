@@ -1,0 +1,61 @@
+{% extends 'layout.html' %}
+{% block title %}
+    HIEUOJ|排行榜
+{% endblock %}
+{% block body %}
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title">用户排名</h3>
+                </div>
+                <div class="panel-body">
+                    <table class="table table-bordered table-text-center">
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>用户名</th>
+                                <th>解题数</th>
+                                <th>通过率</th>
+                            </tr>
+                        </thead>
+                    {% for rank in ranklist %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>
+                                {{ rank.user.studentprofile.name }}
+                                {% if rank.user.is_superuser %}
+                                    {{ rank.user.username }}
+                                    <label class="label label-info">管理员</label>
+                                {% endif %}
+                            </td>
+                            <td>{{ rank.solved_count }}</td>
+                            <td>{{ rank.pass_ratio }}%</td>
+                        </tr>
+                    {% endfor %}
+                    </table>
+                </div>
+            </div>
+            <ul class="pagination pagination-sm">
+                <li {% if not ranklist.has_previous %}class="disabled"{% endif %}>
+                    <a href="{% if ranklist.has_previous %}{{ request.path }}?page={{ ranklist.previous_page_number }}{% else %}#{% endif %}">&laquo;</a>
+                </li>
+                {% for page in before_pages %}
+                    <li><a href="{{ request.path }}?page={{ page }}">{{ page }}</a></li>
+                {% endfor %}
+                <li class="active"><a href="#">{{ ranklist.number }}</a></li>
+                {% for page in after_pages %}
+                    <li><a href="{{ request.path }}?page={{ page }}">{{ page }}</a></li>
+                {% endfor %}
+                <li {% if not ranklist.has_next %}class="disabled"{% endif %}>
+                    <a href="{% if ranklist.has_next %}{{ request.path }}?page={{ ranklist.next_page_number }}{% else %}#{% endif %}">&raquo;</a>
+                </li>
+            </ul>
+        </div>
+        <div class="col-lg-4">
+            {% include 'widgets/to_problem.html' %}
+            {% include 'widgets/my_submit.html' %}
+            {% include 'widgets/system_info.html' %}
+        </div>
+    </div>
+{% endblock %}

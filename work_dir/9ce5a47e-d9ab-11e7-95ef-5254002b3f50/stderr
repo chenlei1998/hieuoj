@@ -1,0 +1,7 @@
+
+Unhandled Exception:
+OutOfMemoryException
+[ERROR] FATAL UNHANDLED EXCEPTION: System.OutOfMemoryException: Out of memory
+  at (wrapper managed-to-native) object:__icall_wrapper_mono_gc_alloc_vector (intptr,intptr,intptr)
+  at (wrapper alloc) object:AllocVector (intptr,intptr)
+  at Program.Main () [0x00000] in <filename unknown>:0 
